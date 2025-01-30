@@ -3,8 +3,10 @@ package server;
 import request.IncomingRequestListener;
 
 import java.io.BufferedReader;
+
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Optional;
 
 public class Server {
@@ -17,28 +19,33 @@ public class Server {
     }
 
     private void receiveMessage() {
+        Optional<BufferedReader> reader = Optional.empty();
 
         try {
             if (socket.isPresent()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.get().getInputStream()));
+                reader = Optional.of(new BufferedReader(new InputStreamReader(socket.get().getInputStream())));
 
-                String message = reader.readLine();
+                String message = reader.get().readLine();
                 System.out.println(message);
 
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        } finally {
+            if (reader.isPresent()) {
+                reader = Optional.empty();
+            }
         }
     }
 
-    public void run()
-    {
+    public void run() {
         IncomingRequestListener requestListener = new IncomingRequestListener();
         requestListener.setPortNumber(PORT);
-        socket = requestListener.listen();   // server waits for client connection
 
+        socket = requestListener.listen();
         while (true) {
             receiveMessage();
+            requestListener.terminateConnection();
         }
 
     }
