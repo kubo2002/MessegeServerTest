@@ -3,7 +3,6 @@ package request;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.Optional;
 
 /**
@@ -73,4 +72,5 @@ public class IncomingRequestListener {
     {
         portNumber = port;
     }
+
 }

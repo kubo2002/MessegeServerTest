@@ -7,6 +7,14 @@ import java.net.Socket;
 import java.util.Optional;
 
 /**
+ * TODO : Dokoncit MenoUzivatela connected
+ * TODO : Precistit kod
+ * TODO : multi threading
+ * TODO : pripojenie viacerych pouzivatelov
+ * TODO : posielanie sprav zo serveru klientovi
+ */
+
+/**
  * The Server class is responsible for handling incoming client communications on
  * a designated port. It continuously listens for connections, reads incoming
  * messages, and terminates the connection after processing. The class utilizes
@@ -54,15 +62,16 @@ public class Server {
      */
     private void receiveMessage() {
         Optional<BufferedReader> reader = Optional.empty();
-
+        String name = "";
         try {
             if (socket.isPresent()) {
                 reader = Optional.of(new BufferedReader(new InputStreamReader(socket.get().getInputStream())));
-
+                name = reader.get().readLine();
                 String message = reader.get().readLine();
-                System.out.println("Client : " + message);
+                System.out.println(name + " : " + message);
             }
         } catch (Exception e) {
+            System.out.println(name + "disconnected.");
             paused = true;
 
         } finally {
@@ -71,7 +80,6 @@ public class Server {
             }
         }
     }
-
 
     /**
      * Starts the server's main processing loop. This method listens for incoming client connections,
@@ -96,6 +104,7 @@ public class Server {
 
         while (true) {
             socket = requestListener.listen();
+            System.out.println("Client connected.");
             paused = false;
             while (!paused) {
                 receiveMessage();
